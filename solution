@@ -1,0 +1,65 @@
+import csv
+from collections import Counter
+
+
+
+
+def scan_csv_a():                                               # method that uses csv module to scan each row in a.csv
+    with open('a.csv', newline='') as csvfile_a:                # opens csv file for a.csv
+        reader_a = csv.reader(csvfile_a)                        # uses csv.reader to create reader object from csv
+        list_a = []                                             # initializing list to store appropriate ID values for count
+        for row in reader_a:                                    # for loop to iterate through each row in csv file; O(n) complexity
+            try:                                                # exception handler that ignores invalid IDs
+                data = row[0]                                   # gets data value in row
+                id_val = int(data)                              # converts string ID data into int
+                list_a.append(id_val)                           # appends ID value to list_a
+                #print(id_val)
+            except ValueError:                                  # gives exception and prints error when value is invalid ID value
+                print('invalid id')
+            #print(list_a)
+        list_a = sorted(list_a)                             # sorts list in descending order
+        new_map = {}                                          # initializes hashmap for insertion of IDs and counts
+        for index in list_a:                                    # for loop to iterate through list of valid IDs in list_a; O(n) complexity
+            a_count = list_a.count(index)                       # gets count for particular ID in list_a
+            counts = [a_count,0]                                # stores counts for list_a and intializes default value of 0 for list_b
+            new_map[index] = counts                               # inserts counts into hashmap at appropriate value
+    return new_map                                               # returns completed map_a
+
+map_a = scan_csv_a()                                          # gets completed and sorted hashmap for list_a
+
+
+def scan_csv_b():                                               # uses csv module to scan each row in csv b
+    with open('b.csv', newline='') as csvfile_b:                # opens csv file for b.csv
+        reader_b = csv.reader(csvfile_b)                        # uses csv.reader to create reader object
+        list_b = []                                             # initializes list_b to store appropriate ID values for count
+        for row in reader_b:                                    # for loop to iterate through each row in csv file; O(n) complexity
+            try:                                                # exception handler ignoring invalid IDs
+                data = row[0]                                   # gets data value in row
+                id_val = int(data)                              # converts string ID data into int
+                list_b.append(id_val)                           # appends ID value to list_b
+            except ValueError:                                  # gives exception and prints error when value is invalid ID value
+                print('invalid id')
+        for index in list_b:                                    # for loop to iterate through list of valid IDs in list_b; O(n) complexity
+            b_count = list_b.count(index)                       # gets count for particular ID in list_b
+            if index in map_a:                                  # if statement to check if ID is already present in map_a
+                old_count = map_a[index]                        # gets map_a count for ID
+                a_count = old_count[0]                          # stores a_count
+                new_count = [a_count, b_count]                  # creates new_count with a_count and b_count included
+                map_a[index] = new_count                        # updates the old_count to the new_count with a and b included
+        return map_a                                            # returns completed map
+
+final_map = scan_csv_b()                                        # initializes final map
+print(final_map)
+
+def create_csv():
+    with open('output.csv', 'w', newline='') as file:         # creates and opens new solution.csv to store solution
+        writer = csv.writer(file)                               # creates writer object with csv.writer to prepare file for updating
+        writer.writerow(['id', 'a', 'b'])                       # writes header row
+        for id in final_map:                                    # for loop to iterate through final map; O(n) complexity
+            counts = final_map.get(id)                          # gets counts for each index
+            a_count = counts[0]                                 # specify a_count and b_count for clarity
+            b_count = counts[1]
+            writer.writerow([id, a_count, b_count])             # writes id, a_count, b_count to row in csv
+
+
+create_csv()
